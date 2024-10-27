@@ -36,8 +36,24 @@ export enum Status {
   MemoryLimitExceeded = "Memory Limit Exceeded",
   RuntimeError = "Runtime Error",
   InternalError = "Internal Error",
-  Failed="Failed",
+  Failed = "Failed",
   Idle = "Idle",
 }
 
+export interface Record {
+  isCached: boolean;
+  statusCode: number;
+  timestamp: Date;
+}
+export interface UsageRecord {
+  cacheCount: number;
+  uncacheCount: number;
+  usageRecord: Record[];
+}
 
+export interface Logs {
+  id: string;
+  action: string;
+  details: JSON;
+  createdAt: string;
+}

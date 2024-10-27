@@ -1,158 +1,525 @@
+// "use client";
+// import React, { useState, useEffect } from "react";
+// import { Search, Menu, X } from "lucide-react";
+// import { motion, AnimatePresence } from "framer-motion";
+// import { ScrollArea } from "@/components/ui/scroll-area";
+// import { Input } from "@/components/ui/input";
+// import { Button } from "@/components/ui/button";
+// import { sections } from "@/constants/docs";
+
+// const SIDEBAR_WIDTH = "280px";
+// const TOC_WIDTH = "240px";
+
+// const Documentation: React.FC = () => {
+//   const [activeSection, setActiveSection] = useState<string>("");
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [isMenuOpen, setIsMenuOpen] = useState(false);
+//   const [activeHeading, setActiveHeading] = useState("");
+
+//   useEffect(() => {
+//     if (typeof window === "undefined") return;
+//     const handleHashChange = () => {
+//       const hash = window.location.hash.slice(1);
+//       if (hash) {
+//         const validSection = sections.find((section) => section.id === hash);
+//         if (validSection) {
+//           setActiveSection(hash);
+//         } else {
+//           setActiveSection(sections[0]?.id || "");
+//           window.history.replaceState(null, "", `#${sections[0]?.id}`);
+//         }
+//       } else {
+//         setActiveSection(sections[0]?.id || "");
+//         window.history.replaceState(null, "", `#${sections[0]?.id}`);
+//       }
+//     };
+
+//     handleHashChange();
+
+//     window.addEventListener("hashchange", handleHashChange);
+//     return () => window.removeEventListener("hashchange", handleHashChange);
+//   }, []);
+
+//   useEffect(() => {
+//     if (typeof window === "undefined") return;
+//     const handleResize = () => setIsMenuOpen(window.innerWidth >= 1024);
+//     window.addEventListener("resize", handleResize);
+//     handleResize();
+//     return () => window.removeEventListener("resize", handleResize);
+//   }, []);
+
+//   useEffect(() => {
+//     if (typeof window === "undefined") return;
+//     const handleScroll = () => {
+//       const headings = document.querySelectorAll<HTMLElement>("h2[id], h3[id]");
+//       const scrollPosition = window.scrollY + 100;
+
+//       for (const heading of Array.from(headings)) {
+//         if (heading.offsetTop <= scrollPosition) {
+//           setActiveHeading(heading.id);
+//           const currentSection = window.location.hash.split("/")[0].slice(1);
+//           if (currentSection) {
+//             window.history.replaceState(
+//               null,
+//               "",
+//               `#${currentSection}/${heading.id}`
+//             );
+//           }
+//         }
+//       }
+//     };
+
+//     window.addEventListener("scroll", handleScroll);
+//     return () => window.removeEventListener("scroll", handleScroll);
+//   }, []);
+
+//   const filteredSections = sections.filter((section) =>
+//     section.title.toLowerCase().includes(searchTerm.toLowerCase())
+//   );
+//   const handleSectionChange = (sectionId: string) => {
+//     if (typeof window !== "undefined") {
+//       setActiveSection(sectionId);
+//       window.history.pushState(null, "", `#${sectionId}`);
+//       setIsMenuOpen(false);
+//     }
+//   };
+//   const handleSubheadingClick = (sectionId: string, subheadingId: string) => {
+//     if (typeof window !== "undefined") {
+//       window.history.pushState(null, "", `#${sectionId}/${subheadingId}`);
+//       document
+//         .getElementById(subheadingId)
+//         ?.scrollIntoView({ behavior: "smooth" });
+//     }
+//   };
+
+//   const SideNav: React.FC = () => (
+//     <motion.nav
+//       animate={{ x: 0 }}
+//       exit={{ x: -300 }}
+//       transition={{ type: "spring", stiffness: 300, damping: 30 }}
+//       className="fixed z-40 h-screen bg-background border-r"
+//       style={{ width: SIDEBAR_WIDTH }}
+//     >
+//       <ScrollArea className="h-full pb-8">
+//         <div className="space-y-5 p-6">
+//           <div className="flex items-center justify-between">
+//             <Button
+//               variant="ghost"
+//               size="icon"
+//               className="lg:hidden"
+//               onClick={() => setIsMenuOpen(false)}
+//             >
+//               <X className="h-5 w-5" />
+//             </Button>
+//           </div>
+
+//           <div className="relative">
+//             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+//             <Input
+//               type="text"
+//               placeholder="Search documentation..."
+//               value={searchTerm}
+//               onChange={(e) => setSearchTerm(e.target.value)}
+//               className="pl-9 bg-secondary/50"
+//             />
+//           </div>
+
+//           <div className="space-y-1">
+//             {filteredSections.map((section) => (
+//               <div key={section.id} className="space-y-1">
+//                 <Button
+//                   variant="ghost"
+//                   className={`w-full justify-start text-left group transition-colors ${
+//                     activeSection === section.id
+//                       ? "bg-secondary text-primary"
+//                       : "hover:bg-secondary/50"
+//                   }`}
+//                   onClick={() => handleSectionChange(section.id)}
+//                 >
+//                   <section.icon
+//                     className={`mr-2 h-4 w-4 transition-colors ${
+//                       activeSection === section.id
+//                         ? "text-primary"
+//                         : "text-muted-foreground group-hover:text-primary"
+//                     }`}
+//                   />
+//                   <span className="truncate">{section.title}</span>
+//                 </Button>
+//               </div>
+//             ))}
+//           </div>
+//         </div>
+//       </ScrollArea>
+//     </motion.nav>
+//   );
+
+//   const TableOfContents: React.FC = () => {
+//     const currentSection = sections.find((s) => s.id === activeSection);
+
+//     return (
+//       <div
+//         className="hidden xl:block fixed right-0 h-screen border-l bg-background"
+//         style={{ width: TOC_WIDTH }}
+//       >
+//         <div className="p-6">
+//           <h3 className="font-medium mb-4 text-sm text-gray-700 uppercase">
+//             On this page
+//           </h3>
+//           <div className="space-y-1">
+//             {currentSection?.subheadings?.map((subheading) => (
+//               <Button
+//                 key={subheading.id}
+//                 variant="ghost"
+//                 size="sm"
+//                 className={`w-full justify-start text-left transition-colors ${
+//                   activeHeading === subheading.id
+//                     ? "text-primary bg-secondary"
+//                     : "text-muted-foreground hover:text-primary hover:bg-secondary/50"
+//                 }`}
+//                 onClick={() =>
+//                   handleSubheadingClick(currentSection.id, subheading.id)
+//                 }
+//               >
+//                 {subheading.title}
+//               </Button>
+//             ))}
+//           </div>
+//         </div>
+//       </div>
+//     );
+//   };
+
+//   return (
+//     <div className="flex min-h-screen bg-background">
+//       <Button
+//         variant="outline"
+//         size="icon"
+//         className="lg:hidden fixed top-4 left-4 z-50 bg-background shadow-md"
+//         onClick={() => setIsMenuOpen(true)}
+//       >
+//         <Menu className="h-5 w-5" />
+//       </Button>
+
+//       {isMenuOpen && (
+//         <motion.div
+//           initial={{ opacity: 0 }}
+//           animate={{ opacity: 1 }}
+//           exit={{ opacity: 0 }}
+//           className="fixed inset-0 bg-background/80 backdrop-blur-sm z-30 lg:hidden"
+//           onClick={() => setIsMenuOpen(false)}
+//         />
+//       )}
+
+//       <AnimatePresence mode="wait">
+//         {(isMenuOpen || window.innerWidth >= 1024) && <SideNav />}
+//       </AnimatePresence>
+
+//       <main
+//         className="flex-1 min-h-screen"
+//         style={{
+//           marginLeft: window.innerWidth >= 1024 ? SIDEBAR_WIDTH : "0",
+//           marginRight: window.innerWidth >= 1280 ? TOC_WIDTH : "0",
+//         }}
+//       >
+//         <div className="max-w-3xl mx-auto px-6 py-12">
+//           <AnimatePresence mode="wait">
+//             <motion.div
+//               key={activeSection}
+//               initial={{ opacity: 0, y: 20 }}
+//               animate={{ opacity: 1, y: 0 }}
+//               exit={{ opacity: 0, y: -20 }}
+//               className="prose prose-gray dark:prose-invert max-w-none"
+//             >
+//               {sections.map(
+//                 (section) =>
+//                   section.id === activeSection && (
+//                     <div key={section.id}>
+//                       <h1 className="flex items-center gap-3 mb-8 text-4xl font-bold tracking-tight">
+//                         <section.icon className="h-10 w-10" />
+//                         {section.title}
+//                       </h1>
+//                       {section.content}
+//                     </div>
+//                   )
+//               )}
+//             </motion.div>
+//           </AnimatePresence>
+//         </div>
+//       </main>
+
+//       <TableOfContents />
+//     </div>
+//   );
+// };
+
+// export default Documentation;
+
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { Search, Menu, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Search,
-  Book,
-  Key,
-  Send,
-  Terminal,
-  Database,
-  Cloud,
-  Settings,
-  Shield,
-  Clock,
-  CodeIcon,
-} from "lucide-react";
-import Examples from "./components/examples";
-import Introduction from "./components/introduction";
-import Authentication from "./components/authentication";
-import MakeRequest from "./components/makeRequest";
+import { Button } from "@/components/ui/button";
+import { sections } from "@/constants/docs";
 
-interface Section {
-  id: string;
-  title: string;
-  icon: React.ElementType;
-  important?: boolean;
-}
-
-const sections: Section[] = [
-  { id: "introduction", title: "Introduction", icon: Book },
-  { id: "authentication", title: "Authentication", icon: Key },
-  { id: "makeRequest", title: "Make a Request", icon: Send },
-  { id: "Examples", title: "Examples", icon: CodeIcon },
-  { id: "endpoints", title: "API Endpoints", icon: Cloud },
-  { id: "dataModels", title: "Data Models", icon: Database },
-  { id: "errorHandling", title: "Error Handling", icon: Shield },
-  { id: "rateLimit", title: "Rate Limiting", icon: Clock },
-  { id: "sdks", title: "SDKs & Libraries", icon: Terminal },
-  { id: "webhooks", title: "Webhooks", icon: Settings },
-];
+const SIDEBAR_WIDTH = "280px";
+const TOC_WIDTH = "240px";
 
 const Documentation: React.FC = () => {
-  const [activeSection, setActiveSection] = useState<string>("introduction");
-  const sectionRefs = useRef<{ [key: string]: React.RefObject<HTMLElement> }>(
-    {}
+  const [activeSection, setActiveSection] = useState<string>(
+    sections[0]?.id || ""
   );
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeHeading, setActiveHeading] = useState("");
+  const [isMounted, setIsMounted] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(1024);
 
   useEffect(() => {
-    sections.forEach((section) => {
-      sectionRefs.current[section.id] = React.createRef();
-    });
+    setIsMounted(true);
+    setWindowWidth(window.innerWidth);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
 
     const handleHashChange = () => {
-      const hash = window.location.hash.replace("#", "");
-      if (hash && sectionRefs.current[hash]) {
-        setActiveSection(hash);
-        scrollToSection(hash);
+      const hash = window.location.hash.slice(1);
+      if (hash) {
+        const validSection = sections.find((section) => section.id === hash);
+        if (validSection) {
+          setActiveSection(hash);
+        } else {
+          setActiveSection(sections[0]?.id || "");
+          window.history.replaceState(null, "", `#${sections[0]?.id}`);
+        }
+      } else {
+        setActiveSection(sections[0]?.id || "");
+        window.history.replaceState(null, "", `#${sections[0]?.id}`);
       }
     };
 
     handleHashChange();
     window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, [isMounted]);
 
-    return () => {
-      window.removeEventListener("hashchange", handleHashChange);
+  useEffect(() => {
+    if (!isMounted) return;
+
+    const handleResize = () => {
+      const width = window.innerWidth;
+      setWindowWidth(width);
+      setIsMenuOpen(width >= 1024);
     };
-  }, []);
 
-  const scrollToSection = (sectionId: string) => {
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [isMounted]);
+
+  useEffect(() => {
+    if (!isMounted) return;
+
+    const handleScroll = () => {
+      const headings = document.querySelectorAll<HTMLElement>("h2[id], h3[id]");
+      const scrollPosition = window.scrollY + 100;
+
+      for (const heading of Array.from(headings)) {
+        if (heading.offsetTop <= scrollPosition) {
+          setActiveHeading(heading.id);
+          const currentSection = window.location.hash.split("/")[0].slice(1);
+          if (currentSection) {
+            window.history.replaceState(
+              null,
+              "",
+              `#${currentSection}/${heading.id}`
+            );
+          }
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isMounted]);
+
+  const filteredSections = sections.filter((section) =>
+    section.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleSectionChange = (sectionId: string) => {
+    if (!isMounted) return;
     setActiveSection(sectionId);
-    const sectionRef = sectionRefs.current[sectionId];
-    if (sectionRef && sectionRef.current) {
-      sectionRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
+    window.history.pushState(null, "", `#${sectionId}`);
+    setIsMenuOpen(false);
   };
 
-  const handleMenuClick = (sectionId: string) => {
-    window.history.pushState(null, "", `/docs#${sectionId}`);
-    scrollToSection(sectionId);
+  const handleSubheadingClick = (sectionId: string, subheadingId: string) => {
+    if (!isMounted) return;
+    window.history.pushState(null, "", `#${sectionId}/${subheadingId}`);
+    document
+      .getElementById(subheadingId)
+      ?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const SideNav: React.FC = () => (
+    <motion.nav
+      animate={{ x: 0 }}
+      exit={{ x: -300 }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      className="fixed z-40 h-screen bg-background border-r"
+      style={{ width: SIDEBAR_WIDTH }}
+    >
+      <ScrollArea className="h-full pb-8">
+        <div className="space-y-5 p-6">
+          <div className="flex items-center justify-between">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Input
+              type="text"
+              placeholder="Search documentation..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9 bg-secondary/50"
+            />
+          </div>
+
+          <div className="space-y-1">
+            {filteredSections.map((section) => (
+              <div key={section.id} className="space-y-1">
+                <Button
+                  variant="ghost"
+                  className={`w-full justify-start text-left group transition-colors ${
+                    activeSection === section.id
+                      ? "bg-secondary text-primary"
+                      : "hover:bg-secondary/50"
+                  }`}
+                  onClick={() => handleSectionChange(section.id)}
+                >
+                  <section.icon
+                    className={`mr-2 h-4 w-4 transition-colors ${
+                      activeSection === section.id
+                        ? "text-primary"
+                        : "text-muted-foreground group-hover:text-primary"
+                    }`}
+                  />
+                  <span className="truncate">{section.title}</span>
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </ScrollArea>
+    </motion.nav>
+  );
+
+  const TableOfContents: React.FC = () => {
+    const currentSection = sections.find((s) => s.id === activeSection);
+
+    return (
+      <div
+        className="hidden xl:block fixed right-0 h-screen border-l bg-background"
+        style={{ width: TOC_WIDTH }}
+      >
+        <div className="p-6">
+          <h3 className="font-medium mb-4 text-sm text-gray-700 uppercase">
+            On this page
+          </h3>
+          <div className="space-y-1">
+            {currentSection?.subheadings?.map((subheading) => (
+              <Button
+                key={subheading.id}
+                variant="ghost"
+                size="sm"
+                className={`w-full justify-start text-left transition-colors ${
+                  activeHeading === subheading.id
+                    ? "text-primary bg-secondary"
+                    : "text-muted-foreground hover:text-primary hover:bg-secondary/50"
+                }`}
+                onClick={() =>
+                  handleSubheadingClick(currentSection.id, subheading.id)
+                }
+              >
+                {subheading.title}
+              </Button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
-    <div className="flex flex-col md:flex-row bg-white">
-      <aside className="w-full md:w-64 bg-gray-100 shadow-xl md:shadow-none fixed h-full md:h-screen overflow-y-auto">
-        <ScrollArea className="h-full py-8 px-4">
-          <nav>
-            <div className="mb-8">
-              <div className="relative mb-4">
-                <Search
-                  className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400"
-                  size={18}
-                />
-                <Input
-                  placeholder="Search docs..."
-                  className="pl-8 bg-white border-gray-200"
-                />
-              </div>
-            </div>
-            {sections.map((section) => (
-              <Button
-                key={section.id}
-                variant={activeSection === section.id ? "default" : "ghost"}
-                className={`w-full justify-start mb-2 text-left ${
-                  activeSection === section.id
-                    ? "bg-blue-100 text-blue-700 hover:bg-blue-100 hover:text-blue-600"
-                    : ""
-                }`}
-                onClick={() => handleMenuClick(section.id)}
-              >
-                <section.icon className="mr-2" size={18} />
-                {section.title}
-              </Button>
-            ))}
-          </nav>
-        </ScrollArea>
-      </aside>
-      <main className="flex-1 md:ml-64">
-        <ScrollArea className="h-[calc(100vh-4rem)]">
-          <div className="max-w-6xl mx-auto p-6 md:p-10 space-y-12">
-            {sections.map((section) => (
-              <motion.section
-                key={section.id}
-                ref={sectionRefs.current[section.id]}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Card className="overflow-hidden shadow-lg border-l-4 border-blue-200">
-                  <CardHeader className="bg-gray-50 border-b">
-                    <CardTitle className="text-2xl font-bold flex items-center text-gray-800">
-                      <section.icon className="mr-3 text-blue-600" size={24} />
-                      {section.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-6">
-                    <div className="prose max-w-none">
-                      {section.id === "introduction" && <Introduction />}
-                      {section.id === "authentication" && <Authentication />}
-                      {section.id === "makeRequest" && <MakeRequest />}
-                      {section.id === "Examples" && <Examples />}
+    <div className="flex min-h-screen bg-background">
+      <Button
+        variant="outline"
+        size="icon"
+        className="lg:hidden fixed top-4 left-4 z-50 bg-background shadow-md"
+        onClick={() => setIsMenuOpen(true)}
+      >
+        <Menu className="h-5 w-5" />
+      </Button>
+
+      {isMenuOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-30 lg:hidden"
+          onClick={() => setIsMenuOpen(false)}
+        />
+      )}
+
+      <AnimatePresence mode="wait">
+        {(isMenuOpen || windowWidth >= 1024) && <SideNav />}
+      </AnimatePresence>
+
+      <main
+        className="flex-1 min-h-screen"
+        style={{
+          marginLeft: windowWidth >= 1024 ? SIDEBAR_WIDTH : "0",
+          marginRight: windowWidth >= 1280 ? TOC_WIDTH : "0",
+        }}
+      >
+        <div className="max-w-3xl mx-auto px-6 py-12">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeSection}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="prose prose-gray dark:prose-invert max-w-none"
+            >
+              {sections.map(
+                (section) =>
+                  section.id === activeSection && (
+                    <div key={section.id}>
+                      <h1 className="flex items-center gap-3 mb-8 text-4xl font-bold tracking-tight">
+                        <section.icon className="h-10 w-10" />
+                        {section.title}
+                      </h1>
+                      {section.content}
                     </div>
-                  </CardContent>
-                </Card>
-              </motion.section>
-            ))}
-          </div>
-        </ScrollArea>
+                  )
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </main>
+
+      <TableOfContents />
     </div>
   );
 };

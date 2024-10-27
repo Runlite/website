@@ -125,7 +125,11 @@ export const OutputBox: React.FC = () => {
 
   const tabContent = useMemo(
     () => ({
-      output: response?.stdout || response?.stderr || response?.error || "No output available",
+      output: `${response?.stdout} \n ${response?.stderr}`.includes("undefined")
+        ? "No output available"
+        : `${response?.stdout} \n ${response?.stderr}` ||
+          response?.error ||
+          "No output available",
       details: JSON.stringify(response, null, 2),
     }),
     [response]
@@ -215,13 +219,13 @@ export const OutputBox: React.FC = () => {
 
         <div className="bg-white p-2 flex-grow overflow-hidden h-[85vh]">
           <>
-              <TabsContent value="output" className="h-full">
-                {renderContent(tabContent.output, "plaintext")}
-              </TabsContent>
-              <TabsContent value="details" className="h-full">
-                {renderContent(tabContent.details, "json")}
-              </TabsContent>
-            </>
+            <TabsContent value="output" className="h-full">
+              {renderContent(tabContent.output, "plaintext")}
+            </TabsContent>
+            <TabsContent value="details" className="h-full">
+              {renderContent(tabContent.details, "json")}
+            </TabsContent>
+          </>
         </div>
       </Tabs>
     </motion.div>

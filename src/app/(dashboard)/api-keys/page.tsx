@@ -13,7 +13,7 @@ import { NewApiKeyDialog } from "./components/apikeyDialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, Plus } from "lucide-react";
+import { AlertTriangle, Plus, RefreshCcw } from "lucide-react";
 import { Version } from "@/types/schema";
 const APIManagement: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -79,10 +79,16 @@ const APIManagement: React.FC = () => {
     <Card className="mx-auto max-w-7xl border-none shadow-none">
       <CardHeader>
         <AlertSection />
-        <CreateApiButton
-          onClick={() => setCreateDialogOpen(true)}
-          isLoading={generateLoad}
-        />
+        <div className="flex justify-between items-center gap-2 ml-auto">
+          <CreateApiButton
+            onClick={() => setCreateDialogOpen(true)}
+            isLoading={generateLoad}
+          />
+          <RefreshButton
+            onClick={() => dispatch(getKeys())}
+            isLoading={isLoading}
+          />
+        </div>
       </CardHeader>
       <CardContent>
         <ApiKeyTable
@@ -126,7 +132,7 @@ const AlertSection: React.FC = () => (
       <AlertDescription>
         Do not share your API key with others, or expose it in the browser or
         other client-side code. In order to protect the security of your
-        account, Compyl may also automatically disable any API key that has
+        account, Runlite may also automatically disable any API key that has
         leaked publicly.
       </AlertDescription>
     </Alert>
@@ -158,5 +164,41 @@ const CreateApiButton: React.FC<{
     </Button>
   </motion.div>
 );
+const RefreshButton = ({
+  onClick,
+  isLoading,
+}: {
+  onClick: () => void;
+  isLoading: boolean;
+}) => {
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={onClick}
+      disabled={isLoading}
+      className={`
+        flex 
+        items-center 
+        gap-2 
+        transition-all 
+        duration-200
+        hover:shadow-md
+        ${isLoading ? "opacity-70" : "opacity-100"}
+      `}
+    >
+      <RefreshCcw
+        size={16}
+        className={`
+          ${isLoading ? "animate-spin" : "animate-none"}
+          transition-transform
+          duration-300
+          group-hover:rotate-180
+        `}
+      />
+      <span className="hidden sm:inline">Refresh Keys</span>
+    </Button>
+  );
+};
 
 export default APIManagement;

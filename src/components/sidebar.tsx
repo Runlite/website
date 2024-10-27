@@ -10,9 +10,10 @@ import {
   ChartNoAxesColumn,
   LockKeyhole,
   LifeBuoy,
-  Settings2,
+  // Settings2,
   SquareTerminal,
-  SquareUser,
+  // SquareUser,
+  Logs
 } from "lucide-react";
 import { Logo } from "./logo";
 
@@ -41,19 +42,24 @@ const mainNavItems: NavItem[] = [
     href: "/usage",
   },
   {
-    icon: <Settings2 className="size-5" />,
-    label: "Settings",
-    href: "/settings",
+    icon: <Logs  className="size-5" />,
+    label: "Events Logs",
+    href: "/logs",
   },
+  // {
+  //   icon: <Settings2 className="size-5" />,
+  //   label: "Settings",
+  //   href: "/settings",
+  // },
 ];
 
 const bottomNavItems: NavItem[] = [
   { icon: <LifeBuoy className="size-5" />, label: "Help", href: "/help" },
-  {
-    icon: <SquareUser className="size-5" />,
-    label: "Account",
-    href: "/account",
-  },
+  // {
+  //   icon: <SquareUser className="size-5" />,
+  //   label: "Account",
+  //   href: "/account",
+  // },
 ];
 
 const NavButton: React.FC<NavItem & { isActive: boolean }> = ({

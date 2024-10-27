@@ -3,12 +3,14 @@ import editorReducer from "./slices/editor.slice";
 import authReducer from "./slices/auth.slice";
 import keyReducer from "./slices/keys.slice";
 import toggleReducer from "./slices/toggle.slice";
+import usageReducer from "./slices/usage.slice";
 export const store = configureStore({
   reducer: {
     editor: editorReducer,
     auth: authReducer,
     keys: keyReducer,
     toggle: toggleReducer,
+    usage:usageReducer
   },
   middleware: (getDefaultMiddlware) =>
     getDefaultMiddlware({

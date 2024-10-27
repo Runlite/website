@@ -12,7 +12,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CheckCircle, XCircle, Trash2, Loader } from "lucide-react";
-import { ApiKey, Status } from "@/types/schema";
+import { ApiKey, Status, Version } from "@/types/schema";
 
 interface ApiKeyTableProps {
   keys: ApiKey[];
@@ -73,7 +73,7 @@ export const ApiKeyTable: React.FC<ApiKeyTableProps> = ({
       <motion.tr key={key.id} {...fadeInUp} transition={{ duration: 0.2 }}>
         <TableCell className="font-medium">{key.name}</TableCell>
         <TableCell>{key.description}</TableCell>
-        <TableCell>{key.version}</TableCell>
+        <TableCell>{key.version==Version.V1?"v1.0.0":""}</TableCell>
 
         <TableCell className="flex gap-1 items-center">
           {key.status === Status.ACTIVE ? (

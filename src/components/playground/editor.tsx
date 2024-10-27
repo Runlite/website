@@ -3,6 +3,7 @@ import { useEditor } from "@/hooks/useEditor";
 import { setCode } from "@/store/slices/editor.slice";
 import { editor } from "monaco-editor";
 import { Skeleton } from "@/components/ui/skeleton";
+
 const MonacoEditor = dynamic(
   () => import("@monaco-editor/react").then((mod) => mod.default),
   { ssr: false }
@@ -37,7 +38,7 @@ export const Editor = () => {
         onMount={handleEditorDidMount}
         options={editorOptions}
         loading={
-          <Skeleton className="w-full h-full animate-pulse bg-gray-200 dark:bg-gray-800" />
+          <Skeleton className="w-full h-full animate-pulse bg-gray-100 dark:bg-gray-800" />
         }
       />
     </>

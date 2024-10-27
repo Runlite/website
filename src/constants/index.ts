@@ -9,6 +9,8 @@ export const DEFAULT_LANGUAGE = [
   "cpp",
   "php",
   "rust",
+  "go",
+  "ruby",
 ] as const;
 export const LanguageToCode: { [key: string]: number } = {
   javascript: 1078,
